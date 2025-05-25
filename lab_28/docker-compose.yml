@@ -1,0 +1,37 @@
+# version: "3.8"
+
+services:
+  counter-app:
+    build:
+      context: . # Build context (usually the folder containing the Dockerfile)
+      dockerfile: Dockerfile # Optional if your Dockerfile has a custom name
+    image: myapp:1.0.0 # Name and tag for the resulting imagee.
+    container_name: counter-app-1 # Container name property on any of your containers
+
+    volumes:
+      - counter_data:/app/counter_data
+    # depends_on:
+    #   - db # Ensure the database starts first
+    environment:
+      - ENV_VAR=value_test # Example environment variable
+  test-alpine:
+    image: myapp:1.0.0
+    container_name: counter-app-2
+    volumes:
+      - counter_data:/app/counter_data
+# Define named volumes for persisting data
+volumes:
+  counter_data:
+
+  # You can define additional named volumes here if needed, for example:
+  # app_logs:  # To store application logs
+  # static_files:  # To serve static files like images or JS/CSS
+
+  # Note:
+  # - Named volumes (like db_data) are managed by Docker and are stored outside the project directory.
+  # - Bind mounts (like ./:/app) map a host directory directly into the container.
+
+# Network configuration (optional customization)
+networks:
+  default:
+    driver: bridge

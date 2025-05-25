@@ -1,0 +1,48 @@
+services:
+  flask-ready-app:
+    build:
+      context: . # Build context (usually the folder containing the Dockerfile)
+      dockerfile: read.Dockerfile # Optional if your Dockerfile has a custom name
+    image: flask-ready-app:1.0.0 # Name and tag for the resulting imagee.
+    container_name: flask-ready
+    # container_name: flask-ready-01 # Container name property on any of your containers
+    volumes:
+      - log:/var/logs
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+
+    # depends_on:
+    #   - db # Ensure the database starts first
+    environment:
+      - ENV_VAR=value_test # Example environment variable
+  monitor-app:
+    build:
+      context: . # Build context (usually the folder containing the Dockerfile)
+      dockerfile: availability.Dockerfile # Optional if your Dockerfile has a custom name
+    image: monitor-app:1.0.0
+    container_name: monitor-app
+    depends_on:
+      - flask-ready-app
+    volumes:
+      - log:/var/logs
+    networks:
+      - app-network
+
+# Define named volumes for persisting data
+volumes:
+  log:
+
+  # You can define additional named volumes here if needed, for example:
+  # app_logs:  # To store application logs
+  # static_files:  # To serve static files like images or JS/CSS
+
+  # Note:
+  # - Named volumes (like db_data) are managed by Docker and are stored outside the project directory.
+  # - Bind mounts (like ./:/app) map a host directory directly into the container.
+
+# Network configuration (optional customization)
+networks:
+  app-network:
+    driver: bridge
